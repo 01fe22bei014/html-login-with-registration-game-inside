@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+
+        body {
+
+            background-image: url('https://images.pexels.com/photos/17735074/pexels-photo-17735074.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940');
+            background-size: cover; /* Ensure the background covers the entire viewport */
+            background-repeat: no-repeat; /* Prevent background from repeating */
+            background-position: center; /* Center the background image */
+            /* Remove the existing background color */
+            background-color: transparent;
+            /* Add other properties like font-family, etc. */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative; /* required for absolute positioning */
+        }
+       .login-container {
+            background-color: #8ed6ff; /* light blue login box */
+            padding: 40px; /* increased padding */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px; /* fixed width */
+            position: relative; /* required for absolute positioning */
+            transition: opacity 0.3s ease-in-out;
+        }
+        .login-container.hidden {
+            opacity: 0;
+            pointer-events: none; /* Hide the form from user interaction */
+        }
+        .login-container.visible {
+            opacity: 1;
+            pointer-events: auto; /* Re-enable form interaction */
+        }
+        .login-container h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* added */
+        }
+        .form-group input[type="submit"],
+        .form-group button {
+            background-color: #4682B4; /* light blue */
+            color: #ffffff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .form-group input[type="submit"]:hover,
+        .form-group button:hover {
+            background-color: #5f9ea0; /* slightly darker blue on hover */
+        }
+        /* Dark pink heart styles */
+        .heart {
+            position: absolute;
+            color: #ff69b4; /* dark pink */
+            font-size: 24px; /* increased font size */
+        }
+        .heart:before {
+            content: "\2665";
+            display: block;
+            animation: animateHeart 8s linear infinite;
+        }
+
+        /* Keyframe animation for hearts */
+        @keyframes animateHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) scale(1);
+            }
+        }
+        .grid-container {
+            display: none; /* Initially hide the grid */
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .grid-container.visible {
+            display: flex; /* Show the grid */
+        }
+        .grid-item {
+    width: calc(20% - 20px); /* Adjust as needed */
+    padding-top: calc(20% - 20px); /* Set padding-top to maintain aspect ratio */
+    background-color: #1e88e5; /* dark blue */
+    border-radius: 8px;
+    margin: 15px; /* Increased spacing */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Hide overflow content */
+}
+
+        .grid-item.clicked {
+            background-color: #ffcccc; /* lighter pink */
+        }
+        .grid-item span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffd9e6; /* Match light pink background */
+            font-size: 24px;
+        }
+        .text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            background-color: rgba(255, 182, 193, 0.9); /* Light pink background color */
+            color: #ffffff; /* Cream text color */
+            font-size: 24px; /* Font size */
+            border-radius: 8px;
+            padding: 10px; /* Padding for better appearance */
+            opacity: 0;
+            pointer-events: none; /* Make text not clickable */
+            transition: opacity 0.3s ease-in-out;
+            z-index: 2; /* Ensure the text overlay is above the number */
+        }
+        .grid-item.clicked .text-overlay {
+            display: block;
+            opacity: 1;
+        }
+        .heart-small {
+            position: absolute;
+            color: #ff0000; /* Red color */
+            font-size: 12px;
+        }
+        .heart-small:before {
+            content: "\2665";
+            display: block;
+            animation: animateSmallHeart 8s linear infinite;
+        }
+        @keyframes animateSmallHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px) scale(1);
+            }
+        }
+        .end-message {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+             color: #ff5252;/* Dark pink */
+            display: none;
+            text-align: center;
+            z-index: 3;
+        }
+        .register-btn {
+            margin-top: 10px; /* Adjust the margin-top value as needed */
+        }
+        .footer {
+            position: fixed;
+            bottom: 50px;
+            right: 70px;
+            font-size: 26px;
+            color: #4682B4;  /* Light blue color */
+            font-family: cursive; /* Use cursive font family */
+            font-weight: bold; /* Ensure clear visibility */
+            letter-spacing: 1px; /* Add spacing between letters for clarity */
+            background-color: transparent; /* Set background to transparent */
+            transition: color 0.3s; /* Smooth transition effect for color change */
+        }
+        .footer:hover {
+            color: #FF1493; /* Dark pink color on hover */
+            cursor: pointer; /* Change cursor to pointer on hover */
+        }
+.background-instructions {
+     background-color: transparent; /* Semi-transparent background */
+    padding: 20px; /* Add padding for better visibility */
+    text-align: center; /* Center align text */
+    position: fixed; /* Fixed positioning to keep it at the top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Make it full width */
+    z-index: 999; /* Ensure it's above other content */
+}
+
+
+    </style>
+</head>
+<body>
+<div class="background-instructions">
+        <h1>Instructions:</h1>
+        <p>There are total 20 boxes. 16 boxes contain compliments, and 4 contain sarcasm. If you open all 16 without opening an insult, you win; otherwise you lose,first register then login to play</p>
+    </div>
+    <script>
+        // Function to generate random hearts
+       
+        // Compliments and Insults arrays
+        const compliments = [
+            "You're so pretty",
+            "You're so handsome",
+            "You're so intelligent",
+            "You're so talented",
+            "You're so charming",
+            "You're so creative",
+            "You're so kind",
+            "You're so thoughtful",
+            "You're so funny",
+            "You're so generous",
+            "You're so caring",
+            "You're so brave",
+            "You're so positive",
+            "You're so energetic",
+            "You're so passionate",
+            "You're so reliable",
+            "You're so friendly",
+            "You're so genuine",
+            "You're so inspiring",
+            "You're so loving",
+            "You're so radiant",
+            "You're so graceful",
+            "You're so captivating",
+            "You're so delightful",
+            "You're so enchanting",
+            "You're so elegant",
+            "You're so fabulous",
+            "You're so fantastic",
+            "You're so dazzling",
+            "You're so breathtaking",
+            "You're so amazing",
+            "You're so awesome",
+            "You're so remarkable",
+            "You're so extraordinary",
+            "You're so sensational",
+            "You're so incredible"
+        ];
+
+        const insults = [
+    "Ur such a joke.",
+    "Ur an epic fail.",
+    "Ur just sad.",
+    "Ur a wreck.",
+    "Ur off mark.",
+    "Ur brainless.",
+    "Ur brainless.",
+    "Ur embarrassing,honestly.",
+    "Ur zero effort.",
+    "Ur clueless.",
+    "Ur classic blunder.",
+    "Ur creativity.Not.",
+    "Ur a disaster.",
+    "Ur a lost maze.",
+    "Ur out sync.",
+    "Ur rock bottom.",
+    "Ur wrong side.",
+    "Ur mistakes repeat.",
+    "Ur epic faceplant.",
+    "Ur zero style.",
+    "Ur square one.",
+    "Ur keep digging.",
+    "Ur self-sabotage.",
+    "Ur snooze button.",
+    "Ur so close.",
+    "Ur just worse."
+];
+
+
+
+
+
+        // Shuffle function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Shuffle compliments and insults arrays
+        const shuffledCompliments = shuffleArray(compliments);
+        const shuffledInsults = shuffleArray(insults);
+
+        let complimentsOpened = 0;
+        let insultsOpened = 0;
+        let gameOver = false;
+
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            var storedPassword = localStorage.getItem(username);
+
+            if (storedPassword && password === storedPassword) {
+                var loginContainer = document.querySelector(".login-container");
+                loginContainer.classList.add("hidden");
+
+                var gridContainer = document.querySelector(".grid-container");
+                gridContainer.classList.add("visible");
+
+                setTimeout(function() {
+                    loginContainer.remove();
+                }, 300);
+
+                var endMessage = document.querySelector(".end-message");
+                endMessage.innerText = "Good luck " + username;
+                endMessage.style.display = "block";
+
+                return false;
+            } else {
+                alert("Invalid username or password");
+                return false;
+            }
+        }
+
+        function register() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            if (username && password) {
+                localStorage.setItem(username, password);
+                alert("Registration successful! You can now login.");
+            } else {
+                alert("Please enter both username and password.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var gridItems = Array.from(document.querySelectorAll(".grid-item"));
+            gridItems = shuffleArray(gridItems);
+
+            for (let i = 0; i < 15; i++) {
+                var textOverlay = gridItems[i].querySelector(".text-overlay");
+                textOverlay.innerText = shuffledCompliments[i];
+            }
+
+            for (let i = 15; i < gridItems.length; i++) {
+                var textOverlay = gridItems[i].querySelector(".text-overlay");
+                textOverlay.innerText = shuffledInsults[i - 15];
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var gridItems = document.querySelectorAll(".grid-item");
+            gridItems.forEach(function(item) {
+                item.addEventListener("click", function() {
+                    if (gameOver) return;
+
+                    var span = item.querySelector("span");
+                    span.style.display = "none";
+
+                    item.classList.add("clicked");
+
+                    var textOverlay = item.querySelector(".text-overlay");
+                    textOverlay.style.display = "block";
+
+                    if (textOverlay.innerText.includes("Ur")) {
+                        gameOver = true;
+                        document.querySelector(".end-message").innerText = "Better luck next time loser";
+                        document.querySelector(".end-message").style.display = "block";
+                    } else {
+                        complimentsOpened++;
+                        if (complimentsOpened === 16 && insultsOpened === 0) {
+                            document.querySelector(".end-message").innerText = "You won bro!";
+                            document.querySelector(".end-message").style.display = "block";
+                            gameOver = true;
+                        }
+                    }
+                });
+            });
+        });
+
+        function changeText(isHovered) {
+    const footer = document.querySelector('.footer');
+    footer.innerText = isHovered ? "Aditya Narthi is great" : "Aditya Narthi";
+}
+
+
+    </script>
+
+
+    <div class="login-container visible">
+        <h2>Login or Register</h2>
+            <form class="login-form" onsubmit="return login()">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Login">
+                <button type="button" onclick="register()" class="register-btn">Register</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="grid-container">
+        <!-- Generate 4x5 grid -->
+        <!-- Compliments -->
+        <div class="grid-item"><span>1</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>2</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>3</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>4</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>5</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>6</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>7</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>8</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>9</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>10</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>11</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>12</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>13</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>14</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>15</span><div class="text-overlay"></div></div>
+        <!-- Insults -->
+        <div class="grid-item"><span>16</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>17</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>18</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>19</span><div class="text-overlay"></div></div>
+        <div class="grid-item"><span>20</span><div class="text-overlay"></div></div>
+
+    </div>
+
+    <div class="end-message"></div>
+    
+   <div class="footer" onmouseover="changeText(true)" onmouseout="changeText(false)">Aditya Narthi</div>
+
+
+</body>
+</html>
